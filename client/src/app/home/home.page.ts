@@ -2,6 +2,8 @@ import { DataService } from './../services/data.service';
 import { Component, OnInit } from '@angular/core';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 import { NativeGeocoder, NativeGeocoderOptions } from '@ionic-native/native-geocoder/ngx';
+import { AlertController } from '@ionic/angular'
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
@@ -13,63 +15,59 @@ export class HomePage implements OnInit {
 
   geoLatitude: number;
   geoLongitude: number;
-  geoAccuracy: number;
   iswatching: boolean;
   geoHeading: number;
-  geoAltitude: number;
-  geoAltitudeAccuracy: number;
-  geoSpeed: number;
   updateDB: Array<any> = [];
   tempCollection: Array<any> = [];
+  subscription: Subscription
   watchLocationUpdates: any;
 
-  constructor(private geolocation: Geolocation, private toFireBase: DataService) { }
+  constructor(private geolocation: Geolocation, private toFireBase: DataService, public alertController: AlertController) { }
 
   ngOnInit() {
     this.geolocation.getCurrentPosition().then((resp) => {
       this.geoLatitude = resp.coords.latitude;
       this.geoLongitude = resp.coords.longitude;
-      this.geoHeading = resp.coords.heading;
-      this.geoAltitude = resp.coords.altitude;
-      this.geoAltitudeAccuracy = resp.coords.altitudeAccuracy;
-      this.geoSpeed = resp.coords.speed;
-      this.geoAccuracy = resp.coords.accuracy;
       // tslint:disable-next-line: max-line-length
-      this.tempCollection.push([this.geoLongitude, this.geoLatitude, this.geoHeading, this.geoAltitude, this.geoAltitudeAccuracy, this.geoSpeed])
+      this.tempCollection.push(this.geoLongitude, this.geoLatitude)
     }).catch((err) => {
       console.log(err)
     });
   }
-  x
-  watchingLocation() {
+  watchingLocation(User) {
+    if(User == ""){
+      this.Alert()
+    } else {
     this.iswatching = true;
     this.watchLocationUpdates = this.geolocation.watchPosition();
-    this.watchLocationUpdates.subscribe((resp) => {
+    this.subscription = this.watchLocationUpdates.subscribe((resp) => {
       console.log(resp.coords.latitude);
       this.geoLatitude = resp.coords.latitude;
       this.geoLongitude = resp.coords.longitude;
-      this.geoHeading = resp.coords.heading;
-      this.geoAltitude = resp.coords.altitude;
-      this.geoAltitudeAccuracy = resp.coords.altitudeAccuracy;
-      this.geoSpeed = resp.coords.speed;
-      this.geoAccuracy = resp.coords.accuracy;
-      // tslint:disable-next-line: max-line-length
-      this.x = setInterval(() => {
-        // tslint:disable-next-line: max-line-length
-        this.tempCollection.push([this.geoLongitude, this.geoLatitude, this.geoHeading, this.geoAltitude, this.geoAltitudeAccuracy, this.geoSpeed]);
-        this.updateDB[1].push(this.tempCollection);
-        console.log(this.updateDB);
-        this.toFireBase.add(this.updateDB);
-      }, 5000);
+      this.tempCollection = []
+      this.tempCollection.push(this.geoLongitude, this.geoLatitude);
+      this.toFireBase.add(User,this.tempCollection);
+      console.log(this.tempCollection)
     });
   }
+}
   stopLocationWatch() {
     this.iswatching = false;
-    let killit = this.watchLocationUpdates.subscribe();
-    killit.unsubscribe();
+    this.subscription.unsubscribe();
   }
   upload(user) {
     this.updateDB.push(user, this.tempCollection)
   }
+
+  async Alert() {
+    const alert = await this.alertController.create({
+      header: 'Alert',
+      subHeader: 'Name is Not Enter.',
+      message: 'Please Enter The Name First!',
+      buttons: ['OK']
+    })
+    await alert.present();
+  }
+
 
 }

@@ -1,6 +1,31 @@
-#map-test {
+.container #map-test {
   position: absolute;
   top: 0;
   bottom: 0;
   width: 100%;
+  height: auto;
+}
+
+.container .btn {
+  position: absolute;
+  top: 90%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  background-color: #555;
+  color: white;
+  font-size: 16px;
+  padding: 12px 24px;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+}
+.container .btn1 {
+  left: 40%;
+}
+
+.container .btn3 {
+  left: 60%;
+}
+.container .btn:hover {
+  background-color: black;
 }

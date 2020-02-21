@@ -12,8 +12,8 @@ export class DataService {
 
   maplocation: location;
 
-  add(item) {
-    //  this.db.object("/" + item[0]).set(item)
+  add(name,item) {
+    this.db.object("/"+name).set(item)
   }
   refer = firebase.database().ref('/');
 

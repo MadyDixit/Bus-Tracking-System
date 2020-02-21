@@ -12,7 +12,7 @@ export class GetlocationserviceService {
   constructor(private db: AngularFireDatabase) {
   }
   getlogandlat(name) {
-    return this.db.object('/' + name);
+    return this.db.object('/' + name).valueChanges();
   }
 
 }

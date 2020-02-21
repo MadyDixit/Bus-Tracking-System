@@ -12,17 +12,23 @@
       <ion-title size="large">Blank</ion-title>
     </ion-toolbar>
   </ion-header>
+  <ion-card>
   <form>
     <ion-item>
       <ion-label position="floating">Enter The Name:</ion-label>
       <ion-input text="text" name="User" [(ngModel)]="User" required></ion-input>
     </ion-item>
-    <ion-item>
-      <ion-button (click)="upload(User)">
-        Submit</ion-button>
-    </ion-item>
   </form>
-  <ion-title>Location Option</ion-title>
-  <ion-button [disabled]="iswatching" (click)="watchingLocation()">Watch</ion-button>
-  <ion-button [disabled]="!iswatching" (click)="stopLocationWatch()">Stop Watch</ion-button>
+  <div class="middle">
+      <ion-card-header>
+        <ion-title>Location Option</ion-title>
+      </ion-card-header>
+    
+      <ion-card-content>
+        <ion-button [disabled]="iswatching" (click)="watchingLocation(User)">Watch</ion-button>
+        <ion-button [disabled]="!iswatching" (click)="stopLocationWatch()">Stop Watch</ion-button>
+        </ion-card-content>
+      </div>
+    </ion-card>
+  <hr>
 </ion-content>
