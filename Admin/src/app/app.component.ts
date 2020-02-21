@@ -11,14 +11,14 @@ import * as mapboxgl from 'mapbox-gl';
 export class AppComponent implements OnInit {
   map: mapboxgl.Map;
   interval: any;
-  lon: any;
-  lat: any;
+  geodata:any;
+  data: any;
 
   latestlong;
   latestlat;
   constructor(public service: TestService) {
-
   }
+
 
   ngOnInit() {
 
@@ -29,52 +29,29 @@ export class AppComponent implements OnInit {
       // center: [this.lon.geometry.coordinates[0], this.lon.geometry.coordinates[1]], // [lng, lat]
       zoom: 0
     });
-    this.map.on('load', (event) => {
-      // add the real time map data
-      this.refreshData();
-      this.interval = setInterval(() => {
-        this.lat = this.refreshData();
-        console.log("t", this.lat);
-        this.latestlong = this.lat.geometry.coordinates[0];
-        this.latestlat = this.lat.geometry.coordinates[1];
-        this.map.getSource('drone').setData(this.lat);
-        this.map.flyTo({
-          center: [
-            this.latestlong, this.latestlat
-          ],
-          zoom: 3,
-          essential: true
-        })
-      }, 5000);
-
-      this.map.addSource('drone', { type: 'geojson', data: this.service.url });
+    this.map.on('load', ()=>{
+      this.map.addSource('points', {
+        'type': 'geojson',
+        'data': {
+        'type': 'FeatureCollection',
+        'features': this.service.geoJson
+        }
+        });
       this.map.addLayer({
-        id: 'drone',
+        'id': 'points',
         'type': 'symbol',
-        'source': 'drone',
-        zoom: 10,
+        'source': 'points',
         'layout': {
-          'icon-image': 'rocket-15',
+        // get the icon name from the source's "icon" property
+        // concatenate the name to get an icon from the style's sprite sheet
+        'icon-image': ['concat', ['get', 'icon'], '-15'],
+        // get the title name from the source's "title" property
+        'text-field': ['get', 'title'],
+        'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold'],
+        'text-offset': [0, 0.6],
+        'text-anchor': 'top'
         }
       });
-      // this.map.setLayerZoomRange('drone', 1, 2);
-
-      this.map.addControl(new mapboxgl.NavigationControl());
-      this.map.addControl(new mapboxgl.FullscreenControl());
-      this.map.addControl(
-        new mapboxgl.GeolocateControl({
-          positionOptions: {
-            enableHighAccuracy: true
-          },
-          trackUserLocation: true
-        })
-      );
-    });
-  }
-  refreshData() {
-    this.service.fetch().subscribe(res => {
-      this.lon = res;
-    });
-    return this.lon;
+    })
   }
 }
