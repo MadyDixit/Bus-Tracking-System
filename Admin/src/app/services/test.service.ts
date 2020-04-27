@@ -30,6 +30,7 @@ export class TestService {
     this.point = []
     for(let i = 0; i < Object.keys(this.data).length; i++){
       this.point.push(Object.values(this.data)[i])
+      console.log(Object.values(this.data)[i])
       this.geoJson.push({
             'type': 'Feature',
             'geometry': {

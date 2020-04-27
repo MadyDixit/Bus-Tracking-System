@@ -26,6 +26,7 @@ export class AppComponent implements OnInit {
     });
     this.service.fetch();
     this.map.on('load',()=>{
+      console.log(this.service.geoJson)
       this.map.addSource('points', {
         'type': 'geojson',
         'data': {
